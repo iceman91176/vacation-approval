@@ -1,0 +1,24 @@
+/showcases/de/versicherungsneuantrag/process-application/src/main/resources/credentials.properties
+# Maven
+target
+
+# Eclipse
+.project
+.classpath
+.settings
+
+# IntelliJ
+.idea
+.iml
+
+# Ant
+build.properties
+
+# H2
+camunda-h2-dbs
+
+# Node.js
+node_modules
+
+# Finder
+**/.DS_Store

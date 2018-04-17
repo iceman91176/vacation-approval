@@ -1,0 +1,133 @@
+<h3>Antrag auf Abwesenheit</h3>
+<form role="form"
+      name="variablesForm">
+
+<div class="row">
+
+  <div class="col-xs-6">
+    <h2>Abwesenheit</h2>
+    
+    
+    <div class="input-group">
+      <label for="leaveStartDate">Erster Tag der Abwesenheit</label>
+	  <input type="text"
+	       cam-variable-name="LEAVE_START_DATE"
+	       cam-variable-type="Date"
+	       class="form-control"
+	       datepicker-popup="yyyy-MM-dd'T'HH:mm:ss"
+	       is-open="dateFieldStartOpened" />
+	
+	  <span class="input-group-btn">
+	    <button type="button"
+	            class="btn btn-default"
+	            ng-click="openLeaveStart($event)">
+	      <i class="glyphicon glyphicon-calendar"></i>
+	    </button>
+	  </span>
+	</div>
+    <div class="input-group">
+      <label for="leaveStartDate">Letzter Tag der Abwesenheit</label>
+	  <input type="text"
+	       cam-variable-name="LEAVE_END_DATE"
+	       cam-variable-type="Date"
+	       class="form-control"
+	       datepicker-popup="yyyy-MM-dd'T'HH:mm:ss"
+	       is-open="dateFieldEndOpened" />
+	
+	  <span class="input-group-btn">
+	    <button type="button"
+	            class="btn btn-default"
+	            ng-click="openEndStart($event)">
+	      <i class="glyphicon glyphicon-calendar"></i>
+	    </button>
+	  </span>
+	</div>
+
+    <!-- Reason for leave -->
+    <div class="form-group">
+      <label for="selectLeaveReason">Grund der Abwesenheit</label>
+      <div class="controls">
+        <!--select box -->
+        <select required
+           class="form-control"
+           name="leaveReason"
+           cam-variable-name="REASON_FOR_LEAVE"
+           cam-variable-type="String"
+           >
+          <option value="urlaub" checked>Urlaub</option>
+          <option value="ltag">L-Tag</option>
+          <option value="dienstreise">Dienstreise</option>
+        </select>
+      </div>
+
+      <!-- Custom validation message for select box -->
+      <p ng-if="variablesForm.leaveReason.$invalid" style="color: red">
+        Bitte Abwesenheitsgrund auswählen.
+      </p>
+    </div>
+
+    <!-- Vertreter -->
+    <div class="form-group">
+      <label for="selectSubstitute">Vertreter</label>
+      <div class="controls">
+        <!--select box -->
+        <select required
+           class="form-control"
+           name="substitute"
+           cam-variable-name="SUBSTITUTE"
+           cam-variable-type="String"
+           >
+          <option value="peter" checked>Peter</option>
+          <option value="mary">Mary</option>
+        </select>
+      </div>
+
+      <!-- Custom validation message for select box -->
+      <p ng-if="variablesForm.substitute.$invalid" style="color: red">
+        Bitte Vertreter auswählen.
+      </p>
+    </div>
+
+    <!-- The following code demonstrates use of custom scripting.
+
+          The 'cam-script' directive makes sure the the script is loaded and can bind to the angular $scope for the form.
+
+          Access to form fields is provided through $scope.variablesForm.
+       -->
+    <script cam-script type="text/form-script">
+	<!--    	
+	  $scope.openLeaveStart = function($event) {
+	    $event.preventDefault();
+	    $event.stopPropagation();
+	
+	    $scope.dateFieldStartOpened = true;
+	  };
+      $scope.openLeaveEnd = function($event) {
+	    $event.preventDefault();
+	    $event.stopPropagation();
+	
+	    $scope.dateFieldEndOpened = true;
+	  };	
+    
+    -->
+    </script>
+
+  </div>
+
+  <div class="col-xs-6">
+    <h2>&nbsp;</h2>
+    <!-- Address -->
+    <div class="form-group">
+      <label for="inputRemark">Bemerkung</label>
+      <div class="controls">
+        <textarea class="form-control"
+                  cam-variable-name="REMARK"
+                  cam-variable-type="String"
+                  rows="4"></textarea>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</form>

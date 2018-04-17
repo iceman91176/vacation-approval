@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_08uhl0u" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.13.0">
+  <bpmn:collaboration id="Collaboration_1dfxnon">
+    <bpmn:participant id="leave-approval" name="Urlaubsantrag" processRef="Process_1" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1" name="Urlaubsantrag" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_0pprdoy" name="Mitarbeiter">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1h1ofdi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_03zvg35</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0ngkhmh" name="Teamleiter" />
+      <bpmn:lane id="Lane_193f8o1" name="Assisenz" />
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" camunda:formKey="embedded:app:forms/start-form.html">
+      <bpmn:outgoing>SequenceFlow_0dven5p</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0dven5p" sourceRef="StartEvent_1" targetRef="Task_03zvg35" />
+    <bpmn:sequenceFlow id="SequenceFlow_138lq95" sourceRef="Task_03zvg35" targetRef="EndEvent_1h1ofdi" />
+    <bpmn:endEvent id="EndEvent_1h1ofdi">
+      <bpmn:incoming>SequenceFlow_138lq95</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_03zvg35" name="Stellvertretung bestätigen" camunda:assignee="${SUBSTITUTE}">
+      <bpmn:incoming>SequenceFlow_0dven5p</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_138lq95</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1dfxnon">
+      <bpmndi:BPMNShape id="Participant_0vscbsm_di" bpmnElement="leave-approval">
+        <dc:Bounds x="262" y="50" width="956" height="684" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="356" y="137" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="329" y="173" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0pprdoy_di" bpmnElement="Lane_0pprdoy">
+        <dc:Bounds x="292" y="50" width="926" height="228" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0ngkhmh_di" bpmnElement="Lane_0ngkhmh">
+        <dc:Bounds x="292" y="278" width="926" height="228" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_193f8o1_di" bpmnElement="Lane_193f8o1">
+        <dc:Bounds x="292" y="506" width="926" height="228" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dven5p_di" bpmnElement="SequenceFlow_0dven5p">
+        <di:waypoint x="392" y="155" />
+        <di:waypoint x="719" y="155" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="555.5" y="134" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1yezqtg_di" bpmnElement="Task_03zvg35">
+        <dc:Bounds x="719" y="115" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1h1ofdi_di" bpmnElement="EndEvent_1h1ofdi">
+        <dc:Bounds x="1119" y="137" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1137" y="177" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_138lq95_di" bpmnElement="SequenceFlow_138lq95">
+        <di:waypoint x="819" y="155" />
+        <di:waypoint x="1119" y="155" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="969" y="134" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
