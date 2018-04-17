@@ -1,0 +1,110 @@
+<form class="form-horizontal"
+      role="form">
+
+  <p>Möchtest Du die Vertretung übernehmen ?</p>
+
+  <div class="form-group">
+    <label class="control-label col-md-2">Antragsteller</label>
+    <div class="col-md-10">
+      <input cam-variable-name="leaveRequester"
+             type="text"
+             name="leaveRequester"
+             readonly="true"
+             class="form-control" />
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label class="control-label col-md-2">Erster Tag der Abwesenheit</label>
+    <div class="col-md-10">
+    <input type="text" ng-model="leaveStartDate" 
+             class="form-control" />
+      <!--
+      <input cam-variable-name="LEAVE_START_DATE"
+             type="text"
+             cam-variable-type="Date"
+             name="LEAVE_START_DATE"
+             readonly="false"
+             class="form-control" />-->
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-md-2">Letzer Tag der Abwesenheit</label>
+    <div class="col-md-10">
+    <input type="text" ng-model="leaveEndDate"
+             class="form-control" />
+             <!--
+      <input cam-variable-name="LEAVE_END_DATE"
+             type="text"
+             cam-variable-type="Date"
+             name="LEAVE_END_DATE"
+             readonly="false"
+             class="form-control" />-->
+    </div>
+  </div>
+
+ <div class="form-group" ng-show="!substitute_approved">
+      <label class="control-label col-md-2">Grund für Ablehnung</label>
+      <div class="col-md-10">
+        <textarea class="form-control"
+                  cam-variable-name="SUBSTITUTE_REJECT_REMARK"
+                  cam-variable-type="String"
+                  rows="4"></textarea>
+      </div>
+    </div>
+ 
+
+  <div class="form-group">
+    <div class="col-md-10 col-md-offset-2">
+      <div class="checkbox">
+        <label>
+          <input cam-variable-name="substitute_approved"
+                 cam-variable-type="Boolean"
+                 type="checkbox"
+                 name="substitute_approved"
+                 class="form-control" checked/>
+          Stellvervetretung übernehmen?
+        </label>
+      </div>
+    </div>
+  </div>
+  
+  <script cam-script type="text/form-script">
+  
+  inject([ '$filter', function($filter) { 
+  
+  var variableManager = camForm.variableManager;
+
+  $scope.leaveStartDate = null;
+	$scope.leaveEndDate = null;
+
+  camForm.on('form-loaded', function() {
+    // fetch the variable 'customVariable'
+    console.log('form loaded');
+    variableManager.fetchVariable('LEAVE_START_DATE');
+    variableManager.fetchVariable('LEAVE_END_DATE');
+    
+  });
+
+  camForm.on('variables-fetched', function() {
+    // value has been fetched, bind to $scope.customerId
+    console.log('START-DATE' + variableManager.variable('LEAVE_START_DATE').value);
+    $scope.leaveStartDate = $filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd HH:mm:ss');
+    console.log($filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd HH:mm:ss'));
+    //$filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd'T'HH:mm:ss');
+    $scope.leaveEndDate = $filter('date')(variableManager.variable('LEAVE_END_DATE').value,'yyyy-MM-dd HH:mm:ss');
+    
+  });
+
+  camForm.on('submit', function(evt) {
+    // set value in variable manager so that it can be sent to backend
+    variableManager.variableValue('LEAVE_START_DATE', $scope.leaveStartDate);
+    variableManager.variableValue('LEAVE_END_DATE', $scope.leaveEndDate);
+    
+  });
+  }]);
+	</script>
+  
+ {{ leaveStartDate | date:'yyyy-MM-ddTHH:mm:ss' }}
+  
+</form>

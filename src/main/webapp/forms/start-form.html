@@ -11,6 +11,7 @@
     <div class="input-group">
       <label for="leaveStartDate">Erster Tag der Abwesenheit</label>
 	  <input type="text"
+	  		required
 	       cam-variable-name="LEAVE_START_DATE"
 	       cam-variable-type="Date"
 	       class="form-control"
@@ -28,6 +29,7 @@
     <div class="input-group">
       <label for="leaveStartDate">Letzter Tag der Abwesenheit</label>
 	  <input type="text"
+	  		required
 	       cam-variable-name="LEAVE_END_DATE"
 	       cam-variable-type="Date"
 	       class="form-control"
@@ -37,7 +39,7 @@
 	  <span class="input-group-btn">
 	    <button type="button"
 	            class="btn btn-default"
-	            ng-click="openEndStart($event)">
+	            ng-click="openLeaveEnd($event)">
 	      <i class="glyphicon glyphicon-calendar"></i>
 	    </button>
 	  </span>
@@ -96,6 +98,22 @@
        -->
     <script cam-script type="text/form-script">
 	<!--    	
+		inject([ '$rootScope', function($rootScope) {
+	      // get variable manager
+	      var variableManager = camForm.variableManager;
+	
+	      // current authentication to get the current logged in user
+	      var user = $rootScope.authentication.name;
+	
+	      // a new variable will add it to the form submit
+	      variableManager.createVariable({
+	        name: 'leaveRequester',
+	        type: 'String',
+	        value: user,
+	        isDirty: true
+	      });
+	    }]);
+	
 	  $scope.openLeaveStart = function($event) {
 	    $event.preventDefault();
 	    $event.stopPropagation();
