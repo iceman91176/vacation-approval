@@ -98,12 +98,23 @@
        -->
     <script cam-script type="text/form-script">
 	<!--    	
-		inject([ '$rootScope', function($rootScope) {
+		inject([ '$rootScope','$http', function($rootScope,$http) {
 	      // get variable manager
 	      var variableManager = camForm.variableManager;
 	
 	      // current authentication to get the current logged in user
 	      var user = $rootScope.authentication.name;
+/*
+			$http.get(Uri.appUri(“engine://engine/:engine/user/” + user + “/profile”)).success(function(result){
+				//$scope.requestor = result.firstName+" "+result.lastName;
+				console.log(result);
+
+
+			});*/
+
+		  var userObject = {"name":user,"email":"c.buchberger@witcom.de"};
+		  console.log($rootScope.authentication);
+	
 	
 	      // a new variable will add it to the form submit
 	      variableManager.createVariable({
@@ -112,6 +123,15 @@
 	        value: user,
 	        isDirty: true
 	      });
+
+		  variableManager.createVariable({
+	        name: 'leaveRequesterObject',
+	        type: 'json',
+	        value: userObject,
+	        isDirty: true
+	      });	
+
+
 	    }]);
 	
 	  $scope.openLeaveStart = function($event) {

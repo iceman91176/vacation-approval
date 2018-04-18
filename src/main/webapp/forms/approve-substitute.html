@@ -1,5 +1,5 @@
 <form class="form-horizontal"
-      role="form">
+      role="form" name="approveForm" >
 
   <p>Möchtest Du die Vertretung übernehmen ?</p>
 
@@ -17,43 +17,47 @@
   <div class="form-group">
     <label class="control-label col-md-2">Erster Tag der Abwesenheit</label>
     <div class="col-md-10">
-    <input type="text" ng-model="leaveStartDate" 
-             class="form-control" />
-      <!--
-      <input cam-variable-name="LEAVE_START_DATE"
-             type="text"
-             cam-variable-type="Date"
-             name="LEAVE_START_DATE"
-             readonly="false"
-             class="form-control" />-->
+    <span class="form-control">{{ leaveStartDate | date:'dd.MM.yyyy' }}</span>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-md-2">Letzer Tag der Abwesenheit</label>
     <div class="col-md-10">
-    <input type="text" ng-model="leaveEndDate"
-             class="form-control" />
-             <!--
-      <input cam-variable-name="LEAVE_END_DATE"
-             type="text"
-             cam-variable-type="Date"
-             name="LEAVE_END_DATE"
-             readonly="false"
-             class="form-control" />-->
+    <span class="form-control">{{ leaveEndDate | date:'dd.MM.yyyy' }}</span>
     </div>
   </div>
-
+  
+  
+  <div class="form-group" ng-show="!substitute_approved" ng-class="{ 'has-error' : approveForm.rejectremark.$invalid && !approveForm.rejectremark.$pristine }">
+  <label class="control-label col-md-2">Grund für Ablehnung</label>
+      <div class="col-md-10">
+        <textarea class="form-control"
+                  cam-variable-name="SUBSTITUTE_REJECT_REMARK"
+                  cam-variable-type="String"
+                  rows="4"
+                  ng-required="!substitute_approved"
+                  name="rejectremark"
+                  ></textarea>
+      <p ng-show="approveForm.rejectremark.$invalid" class="help-block">Ablehungsgrund angeben.</p>            
+      </div>
+ </div> 
+<!-- 
  <div class="form-group" ng-show="!substitute_approved">
       <label class="control-label col-md-2">Grund für Ablehnung</label>
       <div class="col-md-10">
         <textarea class="form-control"
                   cam-variable-name="SUBSTITUTE_REJECT_REMARK"
                   cam-variable-type="String"
-                  rows="4"></textarea>
+                  rows="4"
+                  ng-required="!substitute_approved"
+                  name="rejectremark"
+                  ></textarea>
       </div>
     </div>
- 
-
+       <p ng-if="approveForm.rejectremark.$invalid" style="color: red">
+        Bitte Ablehnungsgrund angeben.
+      </p>
+ -->
   <div class="form-group">
     <div class="col-md-10 col-md-offset-2">
       <div class="checkbox">
@@ -63,7 +67,7 @@
                  type="checkbox"
                  name="substitute_approved"
                  class="form-control" checked/>
-          Stellvervetretung übernehmen?
+          Stellvertretung übernehmen?
         </label>
       </div>
     </div>
@@ -88,23 +92,24 @@
 
   camForm.on('variables-fetched', function() {
     // value has been fetched, bind to $scope.customerId
-    console.log('START-DATE' + variableManager.variable('LEAVE_START_DATE').value);
-    $scope.leaveStartDate = $filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd HH:mm:ss');
-    console.log($filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd HH:mm:ss'));
-    //$filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd'T'HH:mm:ss');
-    $scope.leaveEndDate = $filter('date')(variableManager.variable('LEAVE_END_DATE').value,'yyyy-MM-dd HH:mm:ss');
+    //$scope.leaveStartDate = $filter('date')(variableManager.variable('LEAVE_START_DATE').value,'yyyy-MM-dd HH:mm:ss');
+    //$scope.leaveEndDate = $filter('date')(variableManager.variable('LEAVE_END_DATE').value,'yyyy-MM-dd HH:mm:ss');
+	$scope.leaveStartDate = variableManager.variable('LEAVE_START_DATE').value;
+	$scope.leaveEndDate = variableManager.variable('LEAVE_END_DATE').value;
+
     
   });
 
   camForm.on('submit', function(evt) {
-    // set value in variable manager so that it can be sent to backend
-    variableManager.variableValue('LEAVE_START_DATE', $scope.leaveStartDate);
-    variableManager.variableValue('LEAVE_END_DATE', $scope.leaveEndDate);
+	//console.log('form submit' + $scope.leaveStartDate + " convert to " + $filter('date')($scope.leaveStartDate,'yyyy-MM-ddTHH:mm:ss'));
+	variableManager.variableValue('LEAVE_START_DATE',$filter('date')($scope.leaveStartDate,'yyyy-MM-ddTHH:mm:ss'));
+	variableManager.variableValue('LEAVE_END_DATE',$filter('date')($scope.leaveEndDate,'yyyy-MM-ddTHH:mm:ss'));
+
     
   });
   }]);
 	</script>
   
- {{ leaveStartDate | date:'yyyy-MM-ddTHH:mm:ss' }}
+ {{ testVar | date:'yyyy-MM-ddTHH:mm:ss' }}
   
 </form>
