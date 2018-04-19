@@ -101,10 +101,26 @@ public class CompleteTest {
 		taskService.complete(confirmSubstitute.getId(),variables);
 		
 		LOGGER.warning("Anzahl Tasks: " + taskService.createTaskQuery().count());
+		assertThat(processInstance).task().hasDefinitionKey("confirmTeamManager");
 		
-		
+		Task confirmTeamManager = taskService.createTaskQuery()
+	      .taskDefinitionKey("confirmTeamManager")
+	      .processInstanceId(processInstance.getId())
+	      .singleResult();
 
+		variables.put("managerApproved", true);
+		taskService.complete(confirmTeamManager.getId(),variables);
 		
+		assertThat(processInstance).task().hasDefinitionKey("UpdateLeaveDatabase").hasCandidateGroup("assistance");
+		
+		Task updateLeaveDatabase = taskService.createTaskQuery()
+			      .taskDefinitionKey("UpdateLeaveDatabase")
+			      .processInstanceId(processInstance.getId())
+			      .singleResult();
+
+		//updateLeaveDatabase.se
+		taskService.setAssignee(updateLeaveDatabase.getId(), "assistant1");
+		taskService.complete(updateLeaveDatabase.getId(),variables);
 	}
 
 }

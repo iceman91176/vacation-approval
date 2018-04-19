@@ -6,46 +6,34 @@
   <bpmn:process id="leave-approval-process" name="Urlaubsantrag" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0pprdoy" name="Assistenz">
-        <bpmn:flowNodeRef>Task_0kf2o6b</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UpdateLeaveDatabase</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1h1ofdi</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0r58rfk</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_0ngkhmh" name="Teamleiter">
-        <bpmn:flowNodeRef>Task_1a6i1mo</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>confirmTeamManager</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_ManagerConfirm</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_18x2xbt</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_193f8o1" name="Mitarbeiter">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>confirmSubstitute</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGateway_SubsituteConfirm</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ruleTaskTeamManager</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_SubsituteConfirm</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1naaymb</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>confirmSubstitute</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_0dven5p" sourceRef="StartEvent_1" targetRef="confirmSubstitute" />
     <bpmn:sequenceFlow id="SequenceFlow_138lq95" sourceRef="confirmSubstitute" targetRef="ExclusiveGateway_SubsituteConfirm" />
-    <bpmn:sequenceFlow id="SequenceFlow_0umihdp" sourceRef="confirmSubstitute" targetRef="ExclusiveGateway_SubsituteConfirm" />
     <bpmn:sequenceFlow id="substituteApprovedFlow" name="Ja" sourceRef="ExclusiveGateway_SubsituteConfirm" targetRef="ruleTaskTeamManager">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${substitute_approved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0jkie29" sourceRef="ruleTaskTeamManager" targetRef="Task_1a6i1mo" />
+    <bpmn:sequenceFlow id="SequenceFlow_0jkie29" sourceRef="ruleTaskTeamManager" targetRef="confirmTeamManager" />
     <bpmn:startEvent id="StartEvent_1" camunda:formKey="embedded:app:forms/start-form.html">
       <bpmn:outgoing>SequenceFlow_0dven5p</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="confirmSubstitute" name="Stellvertretung bestätigen" camunda:formKey="embedded:app:forms/approve-substitute.html" camunda:assignee="${SUBSTITUTE}">
-      <bpmn:incoming>SequenceFlow_0dven5p</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_138lq95</bpmn:outgoing>
-      <bpmn:outgoing>SequenceFlow_0umihdp</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_SubsituteConfirm" name="Stellvertretung bestätigt ?">
-      <bpmn:incoming>SequenceFlow_0umihdp</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_138lq95</bpmn:incoming>
-      <bpmn:outgoing>substituteApprovedFlow</bpmn:outgoing>
-      <bpmn:outgoing>substituteNotApprovedFlow</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1e3ldv4" sourceRef="Task_1a6i1mo" targetRef="ExclusiveGateway_ManagerConfirm" />
-    <bpmn:userTask id="Task_1a6i1mo" name="Teamleiter bestätigen" camunda:assignee="${teamManager}">
+    <bpmn:sequenceFlow id="SequenceFlow_1e3ldv4" sourceRef="confirmTeamManager" targetRef="ExclusiveGateway_ManagerConfirm" />
+    <bpmn:userTask id="confirmTeamManager" name="Teamleiter bestätigen" camunda:assignee="${teamManager}">
       <bpmn:incoming>SequenceFlow_0jkie29</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1e3ldv4</bpmn:outgoing>
     </bpmn:userTask>
@@ -55,20 +43,20 @@
     </bpmn:businessRuleTask>
     <bpmn:exclusiveGateway id="ExclusiveGateway_ManagerConfirm" name="Teamleiter bestätigt ?">
       <bpmn:incoming>SequenceFlow_1e3ldv4</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1tbot1f</bpmn:outgoing>
-      <bpmn:outgoing>SequenceFlow_0ksrtk5</bpmn:outgoing>
+      <bpmn:outgoing>managerApprovedFlow</bpmn:outgoing>
+      <bpmn:outgoing>managerNotApprovedFlow</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1tbot1f" sourceRef="ExclusiveGateway_ManagerConfirm" targetRef="Task_0kf2o6b">
+    <bpmn:sequenceFlow id="managerApprovedFlow" name="Ja" sourceRef="ExclusiveGateway_ManagerConfirm" targetRef="UpdateLeaveDatabase">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${managerApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:userTask id="Task_0kf2o6b" name="Abwesenheit eintragen" camunda:candidateGroups="assistance">
-      <bpmn:incoming>SequenceFlow_1tbot1f</bpmn:incoming>
+    <bpmn:userTask id="UpdateLeaveDatabase" name="Abwesenheit eintragen" camunda:candidateGroups="assistance">
+      <bpmn:incoming>managerApprovedFlow</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_15m39ql</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:endEvent id="EndEvent_1h1ofdi">
       <bpmn:incoming>SequenceFlow_1015mcj</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_15m39ql" sourceRef="Task_0kf2o6b" targetRef="Task_0r58rfk" />
+    <bpmn:sequenceFlow id="SequenceFlow_15m39ql" sourceRef="UpdateLeaveDatabase" targetRef="Task_0r58rfk" />
     <bpmn:serviceTask id="Task_0r58rfk" name="Antragsteller informieren">
       <bpmn:extensionElements>
         <camunda:connector>
@@ -86,18 +74,27 @@
       <bpmn:outgoing>SequenceFlow_1015mcj</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_1015mcj" sourceRef="Task_0r58rfk" targetRef="EndEvent_1h1ofdi" />
-    <bpmn:endEvent id="EndEvent_1naaymb">
-      <bpmn:incoming>substituteNotApprovedFlow</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="substituteNotApprovedFlow" name="Nein" sourceRef="ExclusiveGateway_SubsituteConfirm" targetRef="EndEvent_1naaymb">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!substitute_approved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="EndEvent_18x2xbt">
-      <bpmn:incoming>SequenceFlow_0ksrtk5</bpmn:incoming>
+      <bpmn:incoming>managerNotApprovedFlow</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0ksrtk5" sourceRef="ExclusiveGateway_ManagerConfirm" targetRef="EndEvent_18x2xbt">
+    <bpmn:sequenceFlow id="managerNotApprovedFlow" name="Nein" sourceRef="ExclusiveGateway_ManagerConfirm" targetRef="EndEvent_18x2xbt">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!managerApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_SubsituteConfirm" name="Stellvertretung bestätigt ?">
+      <bpmn:incoming>SequenceFlow_138lq95</bpmn:incoming>
+      <bpmn:outgoing>substituteApprovedFlow</bpmn:outgoing>
+      <bpmn:outgoing>substituteNotApprovedFlow</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_1naaymb">
+      <bpmn:incoming>substituteNotApprovedFlow</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="confirmSubstitute" name="Stellvertretung bestätigen" camunda:formKey="embedded:app:forms/approve-substitute.html" camunda:assignee="${SUBSTITUTE}">
+      <bpmn:incoming>SequenceFlow_0dven5p</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_138lq95</bpmn:outgoing>
+    </bpmn:userTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1dfxnon">
@@ -121,13 +118,13 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0dven5p_di" bpmnElement="SequenceFlow_0dven5p">
         <di:waypoint x="395" y="791" />
-        <di:waypoint x="495" y="791" />
+        <di:waypoint x="457" y="791" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="400" y="770" width="90" height="12" />
+          <dc:Bounds x="381" y="770" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="UserTask_1yezqtg_di" bpmnElement="confirmSubstitute">
-        <dc:Bounds x="495" y="751" width="100" height="80" />
+        <dc:Bounds x="457" y="751" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1h1ofdi_di" bpmnElement="EndEvent_1h1ofdi">
         <dc:Bounds x="1197" y="240" width="36" height="36" />
@@ -136,32 +133,25 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_138lq95_di" bpmnElement="SequenceFlow_138lq95">
-        <di:waypoint x="595" y="791" />
-        <di:waypoint x="654" y="791" />
+        <di:waypoint x="557" y="791" />
+        <di:waypoint x="794" y="791" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="579.5" y="770" width="90" height="12" />
+          <dc:Bounds x="630.5" y="770" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_0cjum82_di" bpmnElement="ExclusiveGateway_SubsituteConfirm" isMarkerVisible="true">
-        <dc:Bounds x="654" y="766" width="50" height="50" />
+        <dc:Bounds x="794" y="766" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="644" y="826" width="70" height="24" />
+          <dc:Bounds x="784" y="826" width="71" height="24" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0umihdp_di" bpmnElement="SequenceFlow_0umihdp">
-        <di:waypoint x="595" y="791" />
-        <di:waypoint x="654" y="791" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="624.5" y="770" width="0" height="12" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_1c8lwxw_di" bpmnElement="Task_1a6i1mo">
+      <bpmndi:BPMNShape id="UserTask_1c8lwxw_di" bpmnElement="confirmTeamManager">
         <dc:Bounds x="975" y="422" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1naaymb_di" bpmnElement="EndEvent_1naaymb">
-        <dc:Bounds x="661" y="587" width="36" height="36" />
+        <dc:Bounds x="801" y="579" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="634" y="565" width="90" height="12" />
+          <dc:Bounds x="774" y="557" width="90" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_0mdcm09_di" bpmnElement="ExclusiveGateway_ManagerConfirm" isMarkerVisible="true">
@@ -178,10 +168,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0w0qd6j_di" bpmnElement="substituteApprovedFlow">
-        <di:waypoint x="704" y="791" />
+        <di:waypoint x="844" y="791" />
         <di:waypoint x="975" y="791" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="835" y="770" width="12" height="12" />
+          <dc:Bounds x="905" y="770" width="12" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="BusinessRuleTask_1g48il2_di" bpmnElement="ruleTaskTeamManager">
@@ -194,14 +184,14 @@
           <dc:Bounds x="1040" y="620.5" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1tbot1f_di" bpmnElement="SequenceFlow_1tbot1f">
+      <bpmndi:BPMNEdge id="SequenceFlow_1tbot1f_di" bpmnElement="managerApprovedFlow">
         <di:waypoint x="840" y="437" />
         <di:waypoint x="840" y="298" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="855" y="361.5" width="0" height="12" />
+          <dc:Bounds x="849" y="362" width="12" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_03jfwzx_di" bpmnElement="Task_0kf2o6b">
+      <bpmndi:BPMNShape id="UserTask_03jfwzx_di" bpmnElement="UpdateLeaveDatabase">
         <dc:Bounds x="790" y="218" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_15m39ql_di" bpmnElement="SequenceFlow_15m39ql">
@@ -222,10 +212,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1drmr4d_di" bpmnElement="substituteNotApprovedFlow">
-        <di:waypoint x="679" y="766" />
-        <di:waypoint x="679" y="623" />
+        <di:waypoint x="819" y="766" />
+        <di:waypoint x="819" y="615" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="683" y="689" width="22" height="12" />
+          <dc:Bounds x="823" y="670" width="23" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_18x2xbt_di" bpmnElement="EndEvent_18x2xbt">
@@ -234,11 +224,11 @@
           <dc:Bounds x="662" y="484" width="0" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0ksrtk5_di" bpmnElement="SequenceFlow_0ksrtk5">
+      <bpmndi:BPMNEdge id="SequenceFlow_0ksrtk5_di" bpmnElement="managerNotApprovedFlow">
         <di:waypoint x="815" y="462" />
         <di:waypoint x="680" y="462" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="747.5" y="441" width="0" height="12" />
+          <dc:Bounds x="737" y="441" width="23" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
