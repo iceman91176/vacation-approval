@@ -1,12 +1,23 @@
 <form class="form-horizontal"
       role="form" name="approveForm" >
 
-  <p>Möchtest Du die Vertretung übernehmen ?</p>
+  <p>Urlaubsantrag von {{leaveRequesterObject.firstName}} {{leaveRequesterObject.lastName}} in Datenbank eingeben</p>
 
   <div class="form-group">
     <label class="control-label col-md-2">Antragsteller</label>
     <div class="col-md-10">
       <span class="form-control">{{leaveRequesterObject.firstName}} {{leaveRequesterObject.lastName}}</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label col-md-2">Stellvertreter</label>
+    <div class="col-md-10">
+      <input cam-variable-name="substitute"
+             type="text"
+             name="substitute"
+             readonly="true"
+             class="form-control" />
     </div>
   </div>
   
@@ -23,48 +34,31 @@
     </div>
   </div>
   
-  
-  <div class="form-group" ng-show="!substituteApproved" ng-class="{ 'has-error' : approveForm.rejectremark.$invalid && !approveForm.rejectremark.$pristine }">
-  <label class="control-label col-md-2">Grund für Ablehnung</label>
-      <div class="col-md-10">
-        <textarea class="form-control"
-                  cam-variable-name="substituteRejectRemark"
-                  cam-variable-type="String"
-                  rows="4"
-                  ng-required="!substituteApproved"
-                  name="rejectremark"
-                  ></textarea>
-      <p ng-show="approveForm.rejectremark.$invalid" class="help-block">Ablehungsgrund angeben.</p>            
-      </div>
- </div> 
-
   <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
-      <div class="checkbox">
-        <label>
-          <input cam-variable-name="substituteApproved"
-                 cam-variable-type="Boolean"
-                 type="checkbox"
-                 name="substituteApproved"
-                 class="form-control" checked/>
-          Stellvertretung übernehmen?
-        </label>
-      </div>
+    <label class="control-label col-md-2">Abwesenheitsgrund</label>
+    <div class="col-md-10">
+      <input cam-variable-name="leaveReason"
+             type="text"
+             name="leaveReason"
+             readonly="true"
+             class="form-control" />
     </div>
-  </div>
+  </div>  
+  
   
   <script cam-script type="text/form-script">
   
-  inject([ '$filter','$http', 'Uri', function($filter,$http,Uri) { 
+  inject([ '$filter', function($filter) { 
   
   var variableManager = camForm.variableManager;
 
   $scope.leaveStartDate = null;
-	$scope.leaveEndDate = null;
+  $scope.leaveEndDate = null;
+  $scope.leaveRequesterObject = null;
 
   camForm.on('form-loaded', function() {
     // fetch the variable 'customVariable'
-    
+    console.log('form loaded');
 	variableManager.fetchVariable('leaveRequesterObject');
     variableManager.fetchVariable('leaveStartDate');
     variableManager.fetchVariable('leaveEndDate');
@@ -75,6 +69,9 @@
 	$scope.leaveStartDate = variableManager.variable('leaveStartDate').value;
 	$scope.leaveEndDate = variableManager.variable('leaveEndDate').value;
 	$scope.leaveRequesterObject = variableManager.variableValue('leaveRequesterObject');
+	console.log(variableManager.variable('leaveRequesterObject'));
+
+    
   });
 
   camForm.on('submit', function(evt) {

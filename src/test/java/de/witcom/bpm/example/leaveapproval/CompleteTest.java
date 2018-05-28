@@ -16,6 +16,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import de.witcom.bpm.example.leaveapproval.model.LeaveRequestor;
+
 import static org.camunda.bpm.engine.test.assertions.ProcessEngineTests.*;
 import static org.junit.Assert.*;
 
@@ -49,8 +51,10 @@ public class CompleteTest {
 	public void setup() {
 		init(rule.getProcessEngine());
 		demoUser =  rule.getIdentityService().newUser("carsten");
+		
 		demoUser.setEmail("c.buchberger@witcom.de");
 		demoUser.setFirstName("Carsten");
+		rule.getIdentityService().saveUser(demoUser);
 	}
 
 	/**
@@ -78,17 +82,23 @@ public class CompleteTest {
 		
 		variables.put("LEAVE_START_DATE",  dateformat.parse("2018-04-19T00:00:00"));
 		variables.put("LEAVE_END_DATE",  dateformat.parse("2018-04-25T00:00:00"));
-		variables.put("REASON_FOR_LEAVE",  "urlaub");
-		variables.put("SUBSTITUTE",  substitute);
+		variables.put("leaveReason",  "urlaub");
+		variables.put("substitute",  substitute);
 		variables.put("leaveRequester", demoUser.getId());
-		variables.put("leaveRequesterObject", typedCustomerValue);
+		//variables.put("leaveRequesterObject", typedCustomerValue);
 		 
 		//rule.getRuntimeService().
+		
+		User user = rule.getIdentityService().createUserQuery().userId("carsten").singleResult();
+		if (user == null){
+			LOGGER.severe("In test: User carsten not found");
+		}
 		
 		ProcessInstance processInstance = rule.getRuntimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,variables);
 		TaskService taskService = rule.getTaskService();
 		String instanceId =  processInstance.getProcessInstanceId();
 		LOGGER.info("Started process-instance with ID " + processInstance.getProcessInstanceId());
+		
 		
 		assertThat(processInstance).isStarted().task().hasDefinitionKey("confirmSubstitute").isAssignedTo(substitute);
 		
@@ -97,7 +107,11 @@ public class CompleteTest {
 			      .processInstanceId(processInstance.getId())
 			      .singleResult();
 		
-		variables.put("substitute_approved", true);
+		
+		LeaveRequestor userObject = (LeaveRequestor) taskService.getVariable(confirmSubstitute.getId(), "leaveRequesterObject");
+		LOGGER.info("User Object " + userObject.toString());
+		
+		variables.put("substituteApproved", true);
 		taskService.complete(confirmSubstitute.getId(),variables);
 		
 		LOGGER.warning("Anzahl Tasks: " + taskService.createTaskQuery().count());
@@ -119,8 +133,8 @@ public class CompleteTest {
 			      .singleResult();
 
 		//updateLeaveDatabase.se
-		taskService.setAssignee(updateLeaveDatabase.getId(), "assistant1");
-		taskService.complete(updateLeaveDatabase.getId(),variables);
+		//taskService.setAssignee(updateLeaveDatabase.getId(), "assistant1");
+		//taskService.complete(updateLeaveDatabase.getId(),variables);
 	}
 
 }

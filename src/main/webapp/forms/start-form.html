@@ -12,7 +12,7 @@
       <label for="leaveStartDate">Erster Tag der Abwesenheit</label>
 	  <input type="text"
 	  		required
-	       cam-variable-name="LEAVE_START_DATE"
+	       cam-variable-name="leaveStartDate"
 	       cam-variable-type="Date"
 	       class="form-control"
 	       datepicker-popup="yyyy-MM-dd'T'HH:mm:ss"
@@ -30,7 +30,7 @@
       <label for="leaveStartDate">Letzter Tag der Abwesenheit</label>
 	  <input type="text"
 	  		required
-	       cam-variable-name="LEAVE_END_DATE"
+	       cam-variable-name="leaveEndDate"
 	       cam-variable-type="Date"
 	       class="form-control"
 	       datepicker-popup="yyyy-MM-dd'T'HH:mm:ss"
@@ -53,7 +53,7 @@
         <select required
            class="form-control"
            name="leaveReason"
-           cam-variable-name="REASON_FOR_LEAVE"
+           cam-variable-name="leaveReason"
            cam-variable-type="String"
            >
           <option value="urlaub" checked>Urlaub</option>
@@ -76,7 +76,7 @@
         <select required
            class="form-control"
            name="substitute"
-           cam-variable-name="SUBSTITUTE"
+           cam-variable-name="substitute"
            cam-variable-type="String"
            >
           <option value="peter" checked>Peter</option>
@@ -104,17 +104,6 @@
 	
 	      // current authentication to get the current logged in user
 	      var user = $rootScope.authentication.name;
-/*
-			$http.get(Uri.appUri(“engine://engine/:engine/user/” + user + “/profile”)).success(function(result){
-				//$scope.requestor = result.firstName+" "+result.lastName;
-				console.log(result);
-
-
-			});*/
-
-		  var userObject = {"name":user,"email":"c.buchberger@witcom.de"};
-		  console.log($rootScope.authentication);
-	
 	
 	      // a new variable will add it to the form submit
 	      variableManager.createVariable({
@@ -123,14 +112,6 @@
 	        value: user,
 	        isDirty: true
 	      });
-
-		  variableManager.createVariable({
-	        name: 'leaveRequesterObject',
-	        type: 'json',
-	        value: userObject,
-	        isDirty: true
-	      });	
-
 
 	    }]);
 	
@@ -159,7 +140,7 @@
       <label for="inputRemark">Bemerkung</label>
       <div class="controls">
         <textarea class="form-control"
-                  cam-variable-name="REMARK"
+                  cam-variable-name="remark"
                   cam-variable-type="String"
                   rows="4"></textarea>
       </div>
